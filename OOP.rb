@@ -180,3 +180,13 @@ begin
 rescue => e
   puts "Error: #{e.message}"  # Outputs: Error: AbilityNotUnlockedError
 end
+
+# --------------------- EXTRA
+# Keyword Arguments
+
+def initialize(name:, role:, abilities:)
+end
+
+kaisa = Champion.new(name: "Kaisa", role: "Marksman", abilities: ["Icathian Rain", "Void Seeker", "Killer Instinct"])
+
+# More readability of the keyword augments.
