@@ -20,7 +20,7 @@ end
 # We can then move forward to make instances of these classes we just created!
 
 
-Jhin = Champion.new("Jhin", "marksman", ["Dancing Grenade.", "Deadly Flourish.", "Captive Audience."])
+Jhin = Champion.new("Jhin", "Marksman", ["Dancing Grenade.", "Deadly Flourish.", "Captive Audience."])
 
 
 
@@ -82,16 +82,17 @@ Jhin.cast_ability("Dancing Grenade.")
 
 class Champion
   @@total_champions = 0 # this is a class variable
-end
+
+  attr_accessor :name, :role, :abilities
 
 def initialize(name, role, abilities)
-  @name = name            # this happens to be an instance variable
+  @name = name            # this is an instance variable
   @role = role
   @abilities = abilities
   @@total_champions += 1
+end
 
-
-  def self.number_of_champions       # this happens to be a class method.
+  def self.number_of_champions       # this is a class method.
     @@total_champions
   end
 end
@@ -107,3 +108,75 @@ Champion.number_of_champions # Output: 0
 kaisa = Champion.new("Kaisa", "Marksman", ["Icathian Rain", "Void Seeker", "Killer Instinct"])
 Champion.number_of_champions # Output: 1
 
+# 4 . Object relationships in Basic Ruby.
+
+# When designing a game like League of Legends you have a ton of objects that can actually related with each other.
+
+# One-to-One // a relationship where an object is associated with one and ONLY ONE other object. For example 'Kaisa' has a 'Passive' ability. That is only unique to her.
+# One-to-Many // a relationship where one object can be associated with many other objects, for example: Kaisa has multiple skins unique to her champion.
+# Many-to-Many // a relationship where one object can be associated with many other objects, for example: -- Below --
+#  -- "Champion" can participate in many "Matches" and each "Match" can have many "Champions"
+
+# -------------- EXAMPLE HERE -------------------
+# Consider a situation where every champion belongs to a certain faction in the league universe. Some champions like Garen belong to "Demacia" and darius belongs to "Noxus"
+
+class Faction
+  attr_accessor :name, :champions
+
+  def initialize(name)
+    @name = name
+    @champions = []
+  end
+
+  def add_champion(champion)
+    @champions << champion
+    champion.faction = self
+  end
+end
+class Champion
+  attr_accessor :name, :faction
+
+  def initialize(name)
+    @name = name
+  end
+end
+
+demacia = Faction.new("Demacia")
+noxus = Faction.new("Noxus")
+garen = Champion.new("Garen")
+darius = Champion.new("Darius")
+
+noxus.add_champion(darius)
+demacia.add_champion(garen)
+puts garen.faction.name # This should give us the output=: Demacia
+puts darius.faction.name # This should give us the output=: Demacia
+
+# 5 . ERROR HANDLING ---------------------------
+
+# In games things don't always go as planned sadly. Players might try to do things the game doesn't allow like cheat. or could be some internal errors perhaps. That is where our error handling comes into place!
+
+# Example: -- Lets imagine a player trying to cast there "W" which they haven't unlocked yet.
+
+class Champion
+  attr_accessor :name, :abilities
+
+  def initialize(name)
+    @name = name
+    @abilities - []
+  end
+
+  def cast_ability(ability_name)
+    if @abilities.include?(ability_name)
+      puts "#{@name} casts #{ability_name}!"
+    else
+      raise "AbilityNotUnlockedError"
+    end
+  end
+end
+
+jhin = Champion.new("Jhin")
+begin
+  jhin.cast_ability("Dancing Grenade.")
+rescue => e
+  puts "Error: #{e.message}"  # Outputs: Error: AbilityNotUnlockedError
+end
